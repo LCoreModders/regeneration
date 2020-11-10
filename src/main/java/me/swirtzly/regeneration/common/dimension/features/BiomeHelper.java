@@ -36,7 +36,7 @@ public class BiomeHelper {
     }
 
     public static void addHut(Biome biome) {
-        biome.addFeature(GenerationStage.Decoration.SURFACE_STRUCTURES, Biome.createDecoratedFeature(RegenObjects.WorldGenEntries.HUT, NoFeatureConfig.NO_FEATURE_CONFIG, Placement.CHANCE_HEIGHTMAP, new ChanceConfig(32)));
+        biome.addStructure(RegenObjects.Structures.HUT.get(), new ProbabilityConfig(10000F));
     }
 
     public static void addBlackSpikes(Biome biome) {

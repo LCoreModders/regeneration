@@ -39,7 +39,7 @@ public class GallifreyanTreeFeature extends Feature<NoFeatureConfig> {
     };
 
     public static ResourceLocation createTreeLocation(String name) {
-        return new ResourceLocation(Regeneration.MODID, "regeneration/structures/gallifrey/trees/" + name);
+        return new ResourceLocation(Regeneration.MODID, "gallifrey/trees/" + name);
     }
 
     @Override

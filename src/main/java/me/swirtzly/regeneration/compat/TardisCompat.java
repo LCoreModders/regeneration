@@ -70,7 +70,7 @@ public class TardisCompat {
     }
 
     public static void registerAllRooms() {
-        ARSPieces.register("zero_room", new ARSPiece(new ResourceLocation(Regeneration.MODID, "regeneration/structures/ars/zero_room"), new BlockPos(9, 5, 19)));
+        ARSPieces.register("zero_room", new ARSPiece(new ResourceLocation(Regeneration.MODID, "ars/zero_room"), new BlockPos(9, 5, 19)));
     }
 
     public static void damageSubsystem(World world) {

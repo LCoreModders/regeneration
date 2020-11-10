@@ -103,6 +103,7 @@ public class Regeneration {
         RegenObjects.ChunkGeneratorTypes.CHUNK_GENERATOR_TYPES.register(eventBus);
         RegenObjects.GallifreyBiomes.BIOMES.register(eventBus);
         RegenObjects.Dimensions.DIMENSIONS.register(eventBus);
+        RegenObjects.Structures.FEATURES.register(eventBus);
     }
 
 

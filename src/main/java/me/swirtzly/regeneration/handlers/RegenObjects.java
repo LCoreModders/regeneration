@@ -1,6 +1,11 @@
 package me.swirtzly.regeneration.handlers;
 
 
+import static me.swirtzly.regeneration.Regeneration.MODID;
+
+import java.util.Collection;
+import java.util.function.Supplier;
+
 import me.swirtzly.regeneration.Regeneration;
 import me.swirtzly.regeneration.client.gui.BioContainerContainer;
 import me.swirtzly.regeneration.common.block.ArchBlock;
@@ -9,17 +14,35 @@ import me.swirtzly.regeneration.common.block.ZeroRoomBlock;
 import me.swirtzly.regeneration.common.dimension.DimSingle;
 import me.swirtzly.regeneration.common.dimension.GallifreyChunkGenerator;
 import me.swirtzly.regeneration.common.dimension.GallifreyDimension;
-import me.swirtzly.regeneration.common.dimension.biomes.*;
+import me.swirtzly.regeneration.common.dimension.biomes.GallifrayanWastelands;
+import me.swirtzly.regeneration.common.dimension.biomes.GallifreyanGoldenFields;
+import me.swirtzly.regeneration.common.dimension.biomes.GallifreyanMountainsBiome;
+import me.swirtzly.regeneration.common.dimension.biomes.GallifreyanOcean;
+import me.swirtzly.regeneration.common.dimension.biomes.GallifreyanRedLands;
+import me.swirtzly.regeneration.common.dimension.biomes.GallifreyanRedlandsForest;
+import me.swirtzly.regeneration.common.dimension.biomes.GallifreyanRiver;
+import me.swirtzly.regeneration.common.dimension.biomes.GallifreyanSnowFields;
+import me.swirtzly.regeneration.common.dimension.biomes.GallifreyanWastelandsMountains;
 import me.swirtzly.regeneration.common.dimension.features.FeatureSpikeyBoys;
-import me.swirtzly.regeneration.common.dimension.features.GallifreyanHuts;
 import me.swirtzly.regeneration.common.dimension.features.GallifreyanTreeFeature;
 import me.swirtzly.regeneration.common.dimension.features.SkullFeature;
 import me.swirtzly.regeneration.common.entity.LaserEntity;
 import me.swirtzly.regeneration.common.entity.OverrideEntity;
 import me.swirtzly.regeneration.common.entity.TimelordEntity;
-import me.swirtzly.regeneration.common.item.*;
+import me.swirtzly.regeneration.common.item.ClothingItem;
+import me.swirtzly.regeneration.common.item.ComponentItem;
+import me.swirtzly.regeneration.common.item.ConfessionDialItem;
+import me.swirtzly.regeneration.common.item.DyeableClothingItem;
+import me.swirtzly.regeneration.common.item.FobWatchItem;
+import me.swirtzly.regeneration.common.item.GunItem;
+import me.swirtzly.regeneration.common.item.HandItem;
+import me.swirtzly.regeneration.common.item.IngotItem;
+import me.swirtzly.regeneration.common.item.ItemGroups;
+import me.swirtzly.regeneration.common.item.SealItem;
 import me.swirtzly.regeneration.common.tiles.ArchTile;
 import me.swirtzly.regeneration.common.tiles.HandInJarTile;
+import me.swirtzly.regeneration.common.world.structures.HutStructure;
+import me.swirtzly.regeneration.common.world.structures.HutStructurePieces;
 import me.swirtzly.regeneration.util.common.ICompatObject;
 import me.swirtzly.regeneration.util.common.RegenDamageSource;
 import net.minecraft.block.Block;
@@ -44,14 +67,21 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.*;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.ChunkGeneratorType;
+import net.minecraft.world.gen.GenerationSettings;
+import net.minecraft.world.gen.IChunkGeneratorFactory;
+import net.minecraft.world.gen.OverworldGenSettings;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.ProbabilityConfig;
+import net.minecraft.world.gen.feature.structure.IStructurePieceType;
+import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ModDimension;
 import net.minecraftforge.common.extensions.IForgeContainerType;
@@ -64,11 +94,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.Collection;
-import java.util.function.Supplier;
-
-import static me.swirtzly.regeneration.Regeneration.MODID;
 
 /**
  * Created by Sub on 16/09/2018.
@@ -146,7 +171,7 @@ public class RegenObjects {
 		event.getRegistry().register(WorldGenEntries.TREES.setRegistryName(MODID, "trees"));
 		event.getRegistry().register(WorldGenEntries.SPIKEYS.setRegistryName(MODID, "spikeys"));
 		event.getRegistry().register(WorldGenEntries.SKULLS.setRegistryName(MODID, "skulls"));
-		event.getRegistry().register(WorldGenEntries.HUT.setRegistryName(MODID, "huts"));
+		//event.getRegistry().register(WorldGenEntries.HUT.setRegistryName(MODID, "huts"));
 	}
 
 	public static class Sounds {
@@ -309,9 +334,27 @@ public class RegenObjects {
 		public static final GallifreyanTreeFeature TREES = new GallifreyanTreeFeature(NoFeatureConfig::deserialize);
 		public static final FeatureSpikeyBoys SPIKEYS = new FeatureSpikeyBoys(NoFeatureConfig::deserialize);
 		public static final SkullFeature SKULLS = new SkullFeature(ProbabilityConfig::deserialize);
-		public static final GallifreyanHuts HUT = new GallifreyanHuts(NoFeatureConfig::deserialize);
+		//public static final GallifreyanHuts HUT = new GallifreyanHuts(NoFeatureConfig::deserialize);
 
 	}
+	
+	/** Structure Registration Start */
+	public static class Structures{
+	    /** In 1.14 - 1.15 Structures extend Feature so the forge registry is a feature*/
+	    public static final DeferredRegister<Feature<?>> FEATURES = new DeferredRegister<>(ForgeRegistries.FEATURES, Regeneration.MODID);
+	    
+	    public static final RegistryObject<Structure<ProbabilityConfig>> HUT = FEATURES.register("gallifrey_shack", () -> new HutStructure(ProbabilityConfig::deserialize));
+	    
+	    //Register structure piece so forge won't spam the console. In 1.16 the chunk won't save if you don't do this :/
+	    public static IStructurePieceType HUT_PIECE = registerStructurePiece(HutStructurePieces.Piece::new, "gallifrey_shack_piece");
+	}
+	
+	
+	public static IStructurePieceType registerStructurePiece(IStructurePieceType type, String key) {
+        return Registry.register(Registry.STRUCTURE_PIECE, new ResourceLocation(Regeneration.MODID, key), type);
+    }
+	
+	/** Structure Registration End */
 
 
 	public static class Items {
