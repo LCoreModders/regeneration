@@ -36,7 +36,7 @@ public class BiomeHelper {
     }
 
     public static void addHut(Biome biome) {
-        biome.addStructure(RegenObjects.Structures.HUT.get(), new ProbabilityConfig(10000F));
+        biome.addStructure(RegenObjects.Structures.HUT.get(), NoFeatureConfig.NO_FEATURE_CONFIG);
     }
 
     public static void addBlackSpikes(Biome biome) {

@@ -9,21 +9,22 @@ import com.mojang.datafixers.Dynamic;
 
 import me.swirtzly.regeneration.Regeneration;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.feature.ProbabilityConfig;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.feature.structure.StructureStart;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
-public class HutStructure extends Structure<ProbabilityConfig>{
+public class HutStructure extends Structure<NoFeatureConfig>{
 
     
-    public HutStructure(Function<Dynamic<?>, ? extends ProbabilityConfig> p_i51427_1_) {
+    public HutStructure(Function<Dynamic<?>, ? extends NoFeatureConfig> p_i51427_1_) {
         super(p_i51427_1_);
     }
 
@@ -61,6 +62,36 @@ public class HutStructure extends Structure<ProbabilityConfig>{
    }
    
    /**
+    * Determines the valid chunks that this structure can spawn in.
+    * 
+    * This is using vanilla's default algorithm to determine chunks that this structure can spawn in.
+    * <br> 1.16: Seems to use StructureSeperationSettings that need to be baked into the ConfiguredStructure
+    */
+   @Override
+   protected ChunkPos getStartPositionForPosition(ChunkGenerator<?> chunkGenerator, Random random, int x, int z,
+        int spacingOffsetsX, int spacingOffsetsZ) {
+       
+       //this means Structure cannot be closer than 7 chunks or more than 12 chunks
+       int maxDistance = 12;
+       int minDistance = 7;
+
+       int xTemp = x + maxDistance * spacingOffsetsX;
+       int ztemp = z + maxDistance * spacingOffsetsZ;
+       int xTemp2 = xTemp < 0 ? xTemp - maxDistance + 1 : xTemp;
+       int zTemp2 = ztemp < 0 ? ztemp - maxDistance + 1 : ztemp;
+       int validChunkX = xTemp2 / maxDistance;
+       int validChunkZ = zTemp2 / maxDistance;
+
+       ((SharedSeedRandom) random).setLargeFeatureSeedWithSalt(chunkGenerator.getSeed(), validChunkX, validChunkZ, this.getSeedModifier());
+       validChunkX = validChunkX * maxDistance;
+       validChunkZ = validChunkZ * maxDistance;
+       validChunkX = validChunkX + random.nextInt(maxDistance - minDistance);
+       validChunkZ = validChunkZ + random.nextInt(maxDistance - minDistance);
+
+       return new ChunkPos(validChunkX, validChunkZ);
+   }
+
+/**
     * This method is used for determining if the chunk coordinates are valid, if certain other 
     * structures are too close or not, or some other restrictive condition.
     * <br> DO NOT do dimension checking here. If you do and another mod's dimension

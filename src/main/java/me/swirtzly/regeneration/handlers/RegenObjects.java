@@ -343,7 +343,7 @@ public class RegenObjects {
 	    /** In 1.14 - 1.15 Structures extend Feature so the forge registry is a feature*/
 	    public static final DeferredRegister<Feature<?>> FEATURES = new DeferredRegister<>(ForgeRegistries.FEATURES, Regeneration.MODID);
 	    
-	    public static final RegistryObject<Structure<ProbabilityConfig>> HUT = FEATURES.register("gallifrey_shack", () -> new HutStructure(ProbabilityConfig::deserialize));
+	    public static final RegistryObject<Structure<NoFeatureConfig>> HUT = FEATURES.register("gallifrey_shack", () -> new HutStructure(NoFeatureConfig::deserialize));
 	    
 	    //Register structure piece so forge won't spam the console. In 1.16 the chunk won't save if you don't do this :/
 	    public static IStructurePieceType HUT_PIECE = registerStructurePiece(HutStructurePieces.Piece::new, "gallifrey_shack_piece");
